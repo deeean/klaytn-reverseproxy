@@ -1,0 +1,1 @@
+docker build --platform linux/amd64 -t margintop3498/klaytn-reverseproxy:v1.0.0 .
