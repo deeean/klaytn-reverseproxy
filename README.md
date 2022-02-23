@@ -8,7 +8,7 @@
 ```typescript
 import { encode } from 'js-base64';
 
-const caver = new Caver(new Caver.providers.HttpProvider('http://localhost:3000/v1/ws/baobab', {
+const caver = new Caver(new Caver.providers.HttpProvider('http://localhost:3000/v1/rpc/baobab', {
   headers: [
     { name: 'Authorization', value: `Basic ${encode('root:root')}` }
   ],
