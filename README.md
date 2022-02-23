@@ -2,6 +2,13 @@
 
 클레이튼 엔드포인트 노드를 리버스 프록시 하여 Basic Authentication 을 추가하였습니다.
 
+## Endpoints
+`/`
+`/v1/rpc/cypress`
+`/v1/rpc/baobab`
+`/v1/ws/cypress`
+`/v1/ws/baobab`
+
 ## Usage
 
 ### RPC
