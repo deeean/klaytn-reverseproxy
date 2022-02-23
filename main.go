@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/deeean/klaytn-reverseproxy/config"
+	"github.com/deeean/klaytn-reverseproxy/customize"
 	"github.com/deeean/klaytn-reverseproxy/handler"
 	"github.com/deeean/klaytn-reverseproxy/util"
 	"github.com/labstack/echo/v4"
@@ -13,8 +14,10 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 	e.Use(
+		middleware.CORS(),
 		middleware.Recover(),
 		middleware.LoggerWithConfig(config.LoggerConfig),
+		customize.HeaderOverwriteMiddleware,
 	)
 
 	username := util.GetEnvOrDefault("USERNAME", "root")
