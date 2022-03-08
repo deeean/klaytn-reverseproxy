@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/deeean/klaytn-reverseproxy/config"
-	"github.com/deeean/klaytn-reverseproxy/customize"
-	"github.com/deeean/klaytn-reverseproxy/handler"
-	"github.com/deeean/klaytn-reverseproxy/util"
+	middleware2 "github.com/deeean/klaytn-reverseproxy/middleware"
+	"github.com/deeean/klaytn-reverseproxy/security"
+	"github.com/deeean/klaytn-reverseproxy/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -16,36 +15,38 @@ func main() {
 	e.Use(
 		middleware.CORS(),
 		middleware.Recover(),
-		middleware.LoggerWithConfig(config.LoggerConfig),
-		customize.HeaderOverwriteMiddleware,
+		middleware.LoggerWithConfig(middleware.LoggerConfig{
+			Format: "[${time_rfc3339}] ${remote_ip} ${status} ${method} ${host}${path} ${latency_human}\n",
+		}),
+		middleware2.HeaderOverwriteMiddleware,
 	)
 
-	username := util.GetEnvOrDefault("USERNAME", "root")
+	username := utils.GetEnvOrDefault("USERNAME", "root")
 	if username == "" {
 		e.Logger.Fatal("'username' must not be empty string")
 	}
 
-	password := util.GetEnvOrDefault("PASSWORD", "root")
+	password := utils.GetEnvOrDefault("PASSWORD", "root")
 	if password == "" {
 		e.Logger.Fatal("'password' must not be empty string")
 	}
 
-	cypressRpcUrl, err := util.GetEnvURLOrDefault("CYPRESS_RPC_URL", "http://localhost:8551")
+	cypressRpcUrl, err := utils.GetEnvURLOrDefault("CYPRESS_RPC_URL", "http://localhost:8551")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	cypressWsUrl, err := util.GetEnvURLOrDefault("CYPRESS_WS_URL", "http://localhost:8552")
+	cypressWsUrl, err := utils.GetEnvURLOrDefault("CYPRESS_WS_URL", "http://localhost:8552")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	baobabRpcUrl, err := util.GetEnvURLOrDefault("BAOBAB_RPC_URL", "http://localhost:8551")
+	baobabRpcUrl, err := utils.GetEnvURLOrDefault("BAOBAB_RPC_URL", "http://localhost:8551")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
-	baobabWsUrl, err := util.GetEnvURLOrDefault("BAOBAB_WS_URL", "http://localhost:8552")
+	baobabWsUrl, err := utils.GetEnvURLOrDefault("BAOBAB_WS_URL", "http://localhost:8552")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
@@ -56,7 +57,7 @@ func main() {
 
 	v1 := e.Group("/v1")
 	{
-		v1.Use(middleware.BasicAuth(handler.BasicAuth(username, password)))
+		v1.Use(middleware.BasicAuth(security.BasicAuth(username, password)))
 
 		rpc := v1.Group("/rpc")
 		{
